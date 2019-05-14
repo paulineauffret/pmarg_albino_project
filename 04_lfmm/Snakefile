@@ -1,0 +1,59 @@
+NAMES, = glob_wildcards("vcf/{name}.vcf")
+THRESHOLD = [0.01, 0.05, 0.01, 0.005, 0.001]
+
+
+rule all:
+    input: expand("subset/{vcf}_lfmm_adjp{alpha}.txt", vcf=NAMES, alpha=THRESHOLD)
+
+rule subset:
+    """filter a vcf file with a given pvalue threshold"""
+    output:
+        "subset/{name}_lfmm_adjp{alpha}.txt"
+    input:
+        vcf="vcf/{name}.vcf",
+        pvalues="processed/{name}.txt"
+    log:
+        "log/subset_{name}_lfmm_adjp{alpha}.log"
+    message:
+        "Executing subset_vcf_pvalues on the following dataset: {input}"
+    run:
+        shell("set +u ; "
+            "source activate ~/.conda/envs/r_tidyverse ; "
+            "Rscript subset_vcf_pvalues.R --vcf {input.vcf} --pvalues {input.pvalues} --threshold {wildcards.alpha} -o {output} >& {log} 2>&1 ; "
+            "source deactivate ; set -u"
+        )
+
+rule process:
+    """compute lfmm-pvalues for each SNP association with the factor"""
+    output:
+        "processed/{name}.txt"
+    input:
+        lfmm="lfmm/{name}.lfmm",
+        phenotype="phenotype/{name}.map"
+    log:
+        "log/process_{name}.log"
+    message:
+        "Executing process_lfmm on the following dataset: {input}"
+    run:
+        shell("set +u ; "
+            "source activate ~/.conda/envs/r_lfmm ; "
+            "Rscript process_lfmm.R --genotype {input.lfmm} --phenotype {input.phenotype} -o {output} >& {log} 2>&1 ; "
+            "source deactivate ; set -u"
+        )
+
+rule vcf_to_lfmm:
+    """compute a lfmm style matrix from a vcf file"""
+    output:
+        "lfmm/{name}.lfmm"
+    input:
+        "vcf/{name}.vcf"
+    log:
+        "log/vcf2lfmm_{name}.log"
+    message:
+        "Executing vcf2lfmm on the following dataset: {input}"
+    run:
+        shell(
+            "source activate ~/.conda/envs/parse_vcf ; "
+            "python vcf2lfmm.py {input} -o {output} >& {log} 2>&1 ; "
+            "source deactivate"
+        )
