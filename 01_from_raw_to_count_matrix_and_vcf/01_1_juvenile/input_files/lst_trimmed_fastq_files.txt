@@ -1,0 +1,10 @@
+RIGHT_1=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4255.001.Index_1.TB10_R1_paired.fastq.gz
+RIGHT_4=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4255.003.Index_13.TB6_R1_paired.fastq.gz
+RIGHT_3=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4255.004.Index_4.TB7_R1_paired.fastq.gz
+RIGHT_2=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4255.005.Index_8.TB8_R1_paired.fastq.gz
+RIGHT_5=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4274.008.Index_7.TB9_R1_paired.fastq.gz
+LEFT_1=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4255.001.Index_1.TB10_R2_paired.fastq.gz
+LEFT_4=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4255.003.Index_13.TB6_R2_paired.fastq.gz
+LEFT_3=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4255.004.Index_4.TB7_R2_paired.fastq.gz
+LEFT_2=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4255.005.Index_8.TB8_R2_paired.fastq.gz
+LEFT_5=/home1/scratch/pauffret/juveniles/results/02_trimmomatic/HI.4274.008.Index_7.TB9_R2_paired.fastq.gz

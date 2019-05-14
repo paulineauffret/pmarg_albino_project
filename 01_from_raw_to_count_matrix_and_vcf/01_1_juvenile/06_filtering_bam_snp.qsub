@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#PBS parameters...
+
+# VARIABLES GLOBALES
+data=~/juvenile/results/04_filtering_bamfiles	#path to filtered bam files (resulting from step 04)
+outdir=~/juvenile/results/06_filtering_bam_snp	#path to output directory
+logdir=~/juvenile/log				#path to log directory
+ref=~/Trinity.transcriptome.300118.fa		#path to reference transcriptome
+pic=~/bin/picard-tools-1.119			#path to picard tools version 1.119
+samtools=~/bin/samtools-1.9/samtools		#path to samtools version 1.9
+tmp=~/tmp					#path to temporary directory
+tag="06_filtering_bam_snp"			#tag for output
+
+file=__BASE__
+sample_id=__BASE__
+
+mkdir -p $outdir
+
+cd ${data}
+
+#Add read group information to bam files
+id=${file##*/}
+id=${file%.*}
+time java -jar -Djava.io.tmpdir=$tmp ${pic}/AddOrReplaceReadGroups.jar I=${file} O=${outdir}/${file%.*}_RG.bam RGID=${id} RGLB=${id} RGPL=illumina RGPU=${id} RGSM=${id} >& ${logdir}/${tag}_addRG_${sample_id}.log 2>&1
+
+#mapping stats
+$samtools flagstat ${file} >& ${file}.flagstat 2> ${logdir}/${tag}_firstflagstat_${sample_id}.log
+
+#sorting bam file by name
+#. /appli/bioinfo/samtools/1.6/env.sh
+file=${outdir}/${file%.*}_RG.bam
+time $samtools sort -n -o ${file%.*}_sortname.bam ${file} >& ${logdir}/${tag}_sortname_${sample_id}.log 2>&1
+
+#fixing mates
+file=${file%.*}_sortname.bam
+time $samtools fixmate -m ${file} ${file%.*}_fixmate.bam >& ${logdir}/${tag}_fixmate_${sample_id}.log 2>&1
+
+#sorting bam files by position
+file=${file%.*}_fixmate.bam
+time $samtools sort -o ${file%.*}_sortpos.bam ${file} >& ${tag}_sortpos_${sample_id}.log 2>&1
+
+#Marking duplicates and removing them
+file=${file%.*}_sortpos.bam
+time $samtools markdup ${file} ${file%.*}_markdup.bam >& ${logdir}/${tag}_markdup_${sample_id}.log 2>&1
+
+#Indexing bam files
+file=${file%.*}_markdup.bam
+time $samtools index ${file} ${file}.bai >& ${logdir}/${tag}_index_${sample_id}.log 2>&1
+
+#Correctiong N cigar reads
+. /appli/bioinfo/gatk/latest/env.sh
+time gatk SplitNCigarReads --TMP_DIR ${tmp} -R $ref -I ${file} -O ${file%.*}_splitN.bam >& ${logdir}/${tag}_splitncigar_${sample_id}.log 2>&1 
+
+#Sorting & indexing final bam files
+file=${file%.*}_splitN.bam
+time $samtools sort -o ${file%.*}_sortpos.bam ${file} >& ${tag}_finalsort_${sample_id}.log 2>&1
+time $samtools index ${file%.*}_sortpos.bam ${file%.*}_sortpos.bam.bai >& ${logdir}/${tag}_finalindex_${sample_id}.log 2>&1
+time $samtools flagstat ${file%.*}_sortpos.bam >& ${file%.*}_sortpos.bam.flagstat 2> ${logdir}/${tag}_flagstat_${sample_id}.log
+
+

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+#Load vcftools conda env if needed
+. ~/vcftools/0.1.14/env.sh
+
+#Variable definitions
+INPUT=~/juvenile/results/07_snp_calling_freebayes/juveniles_freebayes_nAlleles_4_minMapQ_20_minCov_5.vcf	#path to input vcf file
+OUTPUT="juveniles_freebayes_nAlleles_4_minMapQ_20_minCov_5_filter_maxmiss1_minmaf0.1_minDP20_rmvindel_alb_blck"	#basename of output file
+WORKING_DIRECTORY=~/juveniles/results/08_vcftools								#path to working/output directory
+indiv_to_keep=													#list og individuals to keep if needed
+
+mkdir -p ${WORKING_DIRECTORY}
+cd ${WORKING_DIRECTORY}
+
+#VCF filtering
+vcftools --vcf $INPUT \
+        --out $OUTPUT \
+        --recode \
+        --max-missing 1 \
+        --maf 0.1 \
+	--minDP 20 \
+	--remove-indels
+	#--keep $indiv_to_keep \
+	#--max-maf 0.5 \
+
+gzip ${OUTPUT}.recode.vcf

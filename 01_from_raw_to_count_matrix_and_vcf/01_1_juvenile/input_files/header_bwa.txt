@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#PBS -q omp
+#PBS -l walltime=24:00:00
+#PBS -l ncpus=16
+#PBS -l mem=64g
+#PBS -e ~/juvenile/log
+#PBS -o ~/juvenile/log

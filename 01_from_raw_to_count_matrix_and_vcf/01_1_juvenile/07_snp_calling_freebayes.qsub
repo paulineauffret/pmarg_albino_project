@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+REF=~/Trinity.transcriptome.300118.fa				#path to reference transcriptome
+BAM=~/juvenile/scripts/input_files/lst_files_freebayes.txt	#path to bam file list (txt file, one path per line)
+WORKING_DIRECTORY=~/juvenile/results/07_snp_calling_freebayes	#path to working/output directory
+LOGDIR=~/juvenile/log						#path to log directory
+VCF=${WORKING_DIRECTORY}/juveniles_freebayes_nAlleles_${nAlleles}_minMapQ_${minMapQ}_minCov_${minCOV}.vcf	#path to output vcf file
+LOG=${LOGDIR}/juveniles_freebayes_nAlleles_${nAlleles}_minMapQ_${minMapQ}_minCov_${minCOV}.log			#path to log file
+
+#Freebayes parameters
+NB_CPU=12
+nAlleles=4
+minMapQ=20
+minCOV=5
+
+mkdir -p ${WORKING_DIRECTORY}
+
+#Load freebayes v1.1.0-3-g961e5f3 conda env if needed
+. ~/freebayes/latest/env.sh
+
+freebayes -f ${REF} \
+	--use-best-n-alleles $nAlleles \
+        --min-mapping-quality $minMapQ \
+        --min-coverage $minCOV \
+	--bam-list ${BAM} \
+	--vcf ${VCF} >& $LOG 2>&1
+
+#freebayes-parallel <(fasta_generate_regions.py ${REF}.fai 100000) ${NB_CPU} \
+#	-f ${REF} \
+#	-d \
+#	--use-best-n-alleles $nAlleles \
+#	--min-mapping-quality $minMapQ \
+#	--min-coverage $minCOV \
+#	--bam-list ${BAM} \
+#        --vcf ${VCF} >> $LOG
+
+
+

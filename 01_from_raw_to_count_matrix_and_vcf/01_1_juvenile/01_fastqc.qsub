@@ -1,0 +1,30 @@
+
+#Global variables
+WORKING_DIRECTORY=~/juveniles/results		#path to output directory
+
+#FastQC variables
+FASTQC_EXEC="fastqc"                      	#path to fastqc version 0.11.5 executable
+MULTIQC="multiqc"				#path to multiqc version 1.5 executable
+
+#creates working directory if not existing
+mkdir -p ${WORKING_DIRECTORY}/fastqc_raw_reads
+
+#load fastqc conda env if needed
+. ~/fastqc/0.11.5/env.sh
+
+#Running Fastqc
+echo "Running FastQC  on ${FILE_R1%_R1*}..."
+
+time ${FASTQC_EXEC} $FILE_R1 -o ${WORKING_DIRECTORY}/fastqc_raw_reads
+time ${FASTQC_EXEC} $FILE_R2 -o ${WORKING_DIRECTORY}/fastqc_raw_reads
+
+echo "Running FastQC  on ${FILE_R1%_R1*} done."
+
+#Load multiqc conda env if needed
+. ~/multiqc/1.5/env.sh
+
+#Go to fastqc output directory
+cd ${WORKING_DIRECTORY}/fastqc_raw_reads
+
+#Run multiqc
+${MULTIQC} *

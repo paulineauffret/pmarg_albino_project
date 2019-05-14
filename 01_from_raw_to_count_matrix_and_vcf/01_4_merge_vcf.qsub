@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#PBS paramaters
+
+#Load vcftools conda env if needed
+
+#VARIABLES
+juv=~/juveniles/juveniles_freebayes_nAlleles_4_minMapQ_20_minCov_5_filter_maxmiss1_minmaf0.1_minDP20_rmvindel_alb_blck.recode.vcf.gz
+mantle=~/mantle/mantle_freebayes_nAlleles_4_minMapQ_20_minCov_5_filter_maxmiss1_minmaf0.1_minDP20_rmvindels-alb_blck.recode.vcf.gz
+WORKING_DIRECTORY=~/vcf_merge
+jm=${WORKING_DIRECTORY}/juv_mantle_merge_freebayes_nAlleles_4_minMapQ_20_minCov_5_filter_maxmiss1_minmaf0.1_minDP20_rmvindels-alb_blck.vcf
+LOG=${WORKING_DIRECTORY}/log.log
+
+mkdir -p ${WORKING_DIRECTORY}
+cd ${WORKING_DIRECTORY}
+
+#Merge vcf
+#preprocess files with
+#1/ bgzip file.vcf
+#2/ tabix -p vcf file.vcf.gz
+
+vcf-merge $juv $mantle >& $jm 2> $LOG
