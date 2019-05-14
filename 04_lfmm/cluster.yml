@@ -1,0 +1,5 @@
+__default__:
+        ncpus : 1
+        walltime : "00:10:00"
+        memory : "10G"
+        queue : "sequentiel"

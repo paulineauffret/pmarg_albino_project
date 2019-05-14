@@ -1,0 +1,3 @@
+tr_name
+TRINITY_DN39482_c0_g1_i1
+TRINITY_DN72900_c4_g5_i1

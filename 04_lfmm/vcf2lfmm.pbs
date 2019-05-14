@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -l walltime=05:00:00
+#PBS -l mem=10gb
+#PBS -l ncpus=1
+#PBS -q sequentiel
+
+id_run=1
+WORKING_DIRECTORY=~/lfmm
+SCRIPT=${WORKING_DIRECTORY}/vcf2lfmm.py
+VCF_FILE=~/mantle_juvenile_maxmiss0.9_minmaf0.1-alb_blck_DP20.recode.vcf 
+BASENAME_VCF=${VCF_FILE##*/}
+FINAL_OUTPUT=${WORKING_DIRECTORY}/results/${BASENAME_VCF}.lfmm
+LOG=${WORKING_DIRECTORY}/log/vcf2lfmm_${id_run}.log
+
+#Chargement de conda
+#module load anaconda-py3.6/4.3.13
+export PATH=$PATH:/appli/anaconda/3.6/bin
+
+source activate ~/.conda/envs/parse_vcf
+
+cd ${WORKING_DIRECTORY}
+
+python ${SCRIPT} ${VCF_FILE} -o ${FINAL_OUTPUT} >& ${LOG} 2>&1

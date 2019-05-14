@@ -1,0 +1,23 @@
+#!/bin/bash
+#$ -S /bin/bash
+#$ -V
+#$ -cwd
+#$ -m bea
+#$ -q short.q
+#$ -pe thread 2
+
+#Step 1
+bash ~/bin/go_enrichment-master/01_scripts/01_blast_against_swissprot.sh
+
+#Step 2
+bash ~/bin/go_enrichment-master/01_scripts/02_get_uniprot_info.sh
+
+#Step 3
+python ~/bin/go_enrichment-master/01_scripts/03_annotate_genes.py ~/bin/go_enrichment-master/03_sequences/Trinity.transcriptome.300118.fa ~/bin/go_enrichment-master/05_annotations/ Trinity.transcriptome.300118.fa_annotations.csv
+
+#Step 4
+bash ~/bin/go_enrichment-master/01_scripts/04_goatools.sh
+
+
+
+
