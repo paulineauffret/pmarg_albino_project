@@ -1,0 +1,22 @@
+
+
+#Global variables
+WORKING_DIRECTORY=		#path to output directory
+
+#FastQC variables
+FASTQC_EXEC="fastqc"		#path to fastqc exec
+
+#creates working directory if not existing
+mkdir -p $WORKING_DIRECTORY/fastqc_raw_reads
+
+#load fastqc conda env if needed
+
+#Running Fastqc
+echo "Running FastQC  on ${FILE_R1%_R1*}..."
+
+time $FASTQC_EXEC $FILE_R1 -o $WORKING_DIRECTORY/fastqc_raw_reads
+time $FASTQC_EXEC $FILE_R2 -o $WORKING_DIRECTORY/fastqc_raw_reads
+
+echo "Running FastQC  on ${FILE_R1%_R1*} done."
+
+

@@ -1,0 +1,46 @@
+
+#Global variables
+WORKING_DIRECTORY=		#path to working/output directory
+
+mkdir -p $WORKING_DIRECTORY
+
+#Trimmomatic variables
+NCPU=8				#number of cpus
+TRIMMOMATIC_JAR="trimmomatic"	#path to trimmomatic jar file (trimmomatic-0.36.jar)
+ADAPTERS=			#path to adapters file (TruSeq2-PE.fa)
+
+#FastQC variables
+FASTQC_EXEC="fastqc"		#path to fastqc exec
+
+#load trimmomatic conda env if needed
+
+base_R1=${FILE_R1##*/}
+base_R2=${FILE_R2##*/}
+
+#Running Trimmomatic
+echo "Running Trimmomatic on ${base_R1%_R1*} file..."
+time $TRIMMOMATIC_JAR PE \
+	-threads $NCPU \
+	-phred33 \
+        $FILE_R1 \
+        $FILE_R2 \
+        $WORKING_DIRECTORY/${base_R1%.fastq.gz*}_paired.fastq.gz \
+        $WORKING_DIRECTORY/${base_R1%.fastq.gz*}_single.fastq.gz \
+        $WORKING_DIRECTORY/${base_R2%.fastq.gz*}_paired.fastq.gz \
+        $WORKING_DIRECTORY/${base_R2%.fastq.gz*}_single.fastq.gz \
+        ILLUMINACLIP:$ADAPTERS:2:20:7 \
+        LEADING:26 \
+        TRAILING:26 \
+        SLIDINGWINDOW:20:20 \
+	MINLEN:40
+echo "Running Trimmomatic on ${base_R1%%_R1*} file done."
+
+
+#Running Fastqc on trimmed reads
+#Load fastqc conda env if needed
+echo "Running FastQC  on ${base_R1%_R1*} file..."
+mkdir -p $WORKING_DIRECTORY/fastqc_trimmed_reads
+time $FASTQC_EXEC $WORKING_DIRECTORY/${base_R1%_R1*}*_paired.fastq.gz -o $WORKING_DIRECTORY/fastqc_trimmed_reads/
+echo "Running FastQC  on ${base_R1%_R1*} done."
+
+
